@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Solicitudes</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>Solicitudes Pendientes</h1>
+    <table id="solicitudesTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Identificador</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="solicitudesList"></tbody>
+    </table>
+
+    <script>
+        async function cargarSolicitudes() {
+            const respuesta = await fetch('http://127.0.0.1:8000/solicitudes');
+            const solicitudes = await respuesta.json();
+            const lista = document.getElementById('solicitudesList');
+            lista.innerHTML = '';
+
+            solicitudes.forEach(solicitud => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${solicitud.id}</td>
+                    <td>${solicitud.tipo}</td>
+                    <td>${solicitud.tipo === 'persona' ? solicitud.NombrePersona : solicitud.NombreEmpresa}</td>
+                    <td>${solicitud.tipo === 'persona' ? solicitud.DNI : solicitud.RUC}</td>
+                    <td>${solicitud.correo}</td>
+                    <td>
+                        <button onclick="aprobarSolicitud(${solicitud.id})">Aprobar</button>
+                        <button onclick="rechazarSolicitud(${solicitud.id})">Rechazar</button>
+                    </td>
+                `;
+                lista.appendChild(fila);
+            });
+        }
+
+        async function aprobarSolicitud(id) {
+    try {
+        const respuesta = await fetch(`http://127.0.0.1:8000/aprobar?id_solicitud=${id}`, {
+            method: 'POST'
+            });
+            cargarSolicitudes();
+        } catch (error) {
+            console.error('Error al aprobar solicitud', error);
+        }
+    }
+
+        async function rechazarSolicitud(id) {
+            // En un escenario real, implementarías la lógica de rechazo
+            console.log('Solicitud rechazada:', id);
+        }
+
+        // Cargar solicitudes al inicio
+        cargarSolicitudes();
+        // Recargar cada 30 segundos
+        setInterval(cargarSolicitudes, 30000);
+    </script>
+</body>
+</html>
