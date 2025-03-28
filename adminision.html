@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Panel de Solicitudes</title>
     <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
     </style>
 </head>
+
 <body>
     <h1>Solicitudes Pendientes</h1>
     <table id="solicitudesTable">
@@ -16,6 +27,7 @@
                 <th>ID</th>
                 <th>Tipo</th>
                 <th>Nombre</th>
+                <th>Alias</th>
                 <th>Identificador</th>
                 <th>Correo</th>
                 <th>Acciones</th>
@@ -37,6 +49,7 @@
                     <td>${solicitud.id}</td>
                     <td>${solicitud.tipo}</td>
                     <td>${solicitud.tipo === 'persona' ? solicitud.NombrePersona : solicitud.NombreEmpresa}</td>
+                    <td>${solicitud.tipo === 'persona' ? solicitud.AliasPersona : solicitud.AliasEmpresa}</td>
                     <td>${solicitud.tipo === 'persona' ? solicitud.DNI : solicitud.RUC}</td>
                     <td>${solicitud.correo}</td>
                     <td>
@@ -49,18 +62,25 @@
         }
 
         async function aprobarSolicitud(id) {
-    try {
-        const respuesta = await fetch(`http://127.0.0.1:8000/aprobar?id_solicitud=${id}`, {
-            method: 'POST'
-            });
-            cargarSolicitudes();
-        } catch (error) {
-            console.error('Error al aprobar solicitud', error);
+            try {
+                const respuesta = await fetch(`http://127.0.0.1:8000/aprobar?id_solicitud=${id}`, {
+                    method: 'POST'
+                });
+                cargarSolicitudes();
+            } catch (error) {
+                console.error('Error al aprobar solicitud', error);
+            }
         }
-    }
 
         async function rechazarSolicitud(id) {
-            // En un escenario real, implementarías la lógica de rechazo
+            try {
+                const respuesta = await fetch(`http://127.0.0.1:8000/rechazar?id_solicitud=${id}`, {
+                    method: 'POST'
+                });
+                cargarSolicitudes();
+            } catch (error) {
+                console.error('Error al rechazar solicitud', error);
+            }
             console.log('Solicitud rechazada:', id);
         }
 
@@ -70,4 +90,5 @@
         setInterval(cargarSolicitudes, 30000);
     </script>
 </body>
+
 </html>

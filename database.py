@@ -20,6 +20,7 @@ class EstadoAdmision(PyEnum):
     EN_PROCESO = "en_proceso"
     ERROR_REGISTRO = "error_registro"
     ADMITIDO = "admitido"
+    RECHAZADO = "rechazado"
 
 class TipoCliente(PyEnum):
     PERSONA = "persona"
@@ -33,10 +34,12 @@ class Cliente(Base):
     # Campos para persona
     NombrePersona = Column(String, nullable=True)
     DNI = Column(String, nullable=True, unique=True, index=True)
+    AliasPersona = Column(String, nullable=True)  # Nuevo campo para alias de persona
     
     # Campos para empresa
     NombreEmpresa = Column(String, nullable=True)
     RUC = Column(String, nullable=True, unique=True, index=True)
+    AliasEmpresa = Column(String, nullable=True)  # Nuevo campo para alias de empresa
     
     # Campos comunes
     correo = Column(String, nullable=False, unique=True, index=True)
@@ -50,7 +53,7 @@ engine = create_engine(DATABASE_URL)
 # Crear sesión
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Crear tablas
+# Crear tablas (asegúrate de ejecutar una migración o recrear la BD en entornos de desarrollo)
 Base.metadata.create_all(bind=engine)
 
 def get_db():

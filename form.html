@@ -44,16 +44,17 @@ button:hover {
 <body>
 <form id="solicitudForm">
 <select id="tipo" required>
-<option value="">Seleccione un tipo</option>
 <option value="persona">Persona</option>
 <option value="empresa">Empresa</option>
 </select>
 <div class="campos-persona">
 <input type="text" id="NombrePersona" placeholder="Nombre Completo" maxlength="100">
+<input type="text" id="AliasPersona" placeholder="Alias" maxlength="50">
 <input type="text" id="DNI" placeholder="DNI" pattern="\d{8}" maxlength="8">
 </div>
 <div class="campos-empresa">
 <input type="text" id="NombreEmpresa" placeholder="Nombre de Empresa" maxlength="100">
+<input type="text" id="AliasEmpresa" placeholder="Alias" maxlength="50">
 <input type="text" id="RUC" placeholder="RUC" pattern="\d{11}" maxlength="11">
 </div>
 <input type="email" id="correo" placeholder="Correo Electrónico" required>
@@ -80,8 +81,10 @@ tipoSelect.addEventListener('change', () => {
 
     // Configurar los campos como requeridos solo si son visibles
     document.getElementById('NombrePersona').required = tipo === 'persona';
+    document.getElementById('AliasPersona').required = tipo === 'persona';
     document.getElementById('DNI').required = tipo === 'persona';
     document.getElementById('NombreEmpresa').required = tipo === 'empresa';
+    document.getElementById('AliasEmpresa').required = tipo === 'empresa';
     document.getElementById('RUC').required = tipo === 'empresa';
 });
 
@@ -92,15 +95,17 @@ form.addEventListener('submit', async (e) => {
 
     const tipo = tipoSelect.value;
     const solicitud = {
-        tipo: tipo === 'persona' ? 'persona' : 'empresa',
+        tipo: tipo,
         correo: document.getElementById('correo').value
     };
 
     if (tipo === 'persona') {
         solicitud.NombrePersona = document.getElementById('NombrePersona').value;
+        solicitud.AliasPersona = document.getElementById('AliasPersona').value;
         solicitud.DNI = document.getElementById('DNI').value;
     } else {
         solicitud.NombreEmpresa = document.getElementById('NombreEmpresa').value;
+        solicitud.AliasEmpresa = document.getElementById('AliasEmpresa').value;
         solicitud.RUC = document.getElementById('RUC').value;
     }
 
@@ -122,6 +127,7 @@ form.addEventListener('submit', async (e) => {
             // Ocultar campos adicionales después de reset
             camposPersona.style.display = 'none';
             camposEmpresa.style.display = 'none';
+            tipoSelect.dispatchEvent(new Event('change'));
         } else {
             mensajeDiv.textContent = datos.detail || 'Error al enviar solicitud';
             mensajeDiv.className = 'error';
@@ -131,7 +137,12 @@ form.addEventListener('submit', async (e) => {
         mensajeDiv.className = 'error';
         console.error('Error:', error);
     }
+
+
 });
+
+
+tipoSelect.dispatchEvent(new Event('change'));
 </script>
 </body>
 </html>
